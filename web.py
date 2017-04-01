@@ -10,6 +10,32 @@ from bottle_sqlite import SQLitePlugin
 # route callbacks that need a database connection.
 install(SQLitePlugin(dbfile='/tmp/test.db'))
 
+# Disabling plugins for specific routes with 'skip':
+
+# sqlite_plugin = SQLitePlugin(dbfile='/tmp/test1.db')
+# install(sqlite_plugin)
+
+# dbfile1 = '/tmp/test1.db'
+# dbfile2 = '/tmp/test2.db'
+
+# The 'skip' parameter accepts a single value or a list of values.
+# You can identify the plugin to be skipped by referencing a name, class, 
+# or instance. Set skip=True to skip all plugins.
+
+# @route('/open/<db>', skip=[sqlite_plugin])
+# def open_db(db):
+# 	# The 'db' keyword argument is not touched by the plugin.
+
+# 	# The plugin handle can be used for runtime configuration:
+# 	if db == 'test1':
+# 		sqlite_plugin.dbfile = dbfile1
+# 	elif db = 'test2':
+# 		sqlite_plugin.dbfile = dbfile2
+# 	else:
+# 		abort(404, "No such database.")
+
+# 	return "Database File switched to: " + sqlite_plugin.dbfile
+
 @route('/show/<post_id:int>')
 def show(db, post_id):
 	c = db.execute('SELECT title, content FROM posts WHERE id = ?', (post_id,))
