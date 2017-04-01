@@ -1,14 +1,38 @@
+import bottle
 from bottle import route, run
 from bottle import template
 from bottle import get, post, request
 from bottle import static_file
 from bottle import error
 from bottle_sqlite import SQLitePlugin
+# import cherrypy
+
+# Restart the server process every time
+# a module file is edited.
+# (Warning! This will create a child process, 
+# using the same command line arguments used
+# to start the main server process, which means that
+# all module-level code is executed at least twice!)
+run(reloader=True)
+
+# set debug=True to deactivate template caching.
+
+
+# Consider using multi-threaded server library - 
+# such as cherrypy - for production:
+
+# class HelloWorld(object):
+# 	def index(self):
+# 		return "Hello World!"
+# 	index.exposed = True
+
+# cherrypy.quickstart(HelloWorld())
+
 
 # Install the SQLite plugin application-wide.
 # SQLitePlugin is smart and will only affect
 # route callbacks that need a database connection.
-install(SQLitePlugin(dbfile='/tmp/test.db'))
+# install(SQLitePlugin(dbfile='/tmp/test.db'))
 
 # Disabling plugins for specific routes with 'skip':
 
@@ -36,45 +60,56 @@ install(SQLitePlugin(dbfile='/tmp/test.db'))
 
 # 	return "Database File switched to: " + sqlite_plugin.dbfile
 
-@route('/show/<post_id:int>')
-def show(db, post_id):
-	c = db.execute('SELECT title, content FROM posts WHERE id = ?', (post_id,))
-	row = c.fetchone()
-	return template('show_post', title=row['title'], text=row['content'])
+# Create an application object - an instance of Bottle
+# This object oriented approach supports reusability, as it
+# permits the app object to be imported from this 
+# module and merged with other applications using Bottle.mount()
 
-@route('/contact')
-def contact_page():
-	'''This callback does not need a db connection. Because the 'db'
-	keyword argument is missing, the sqlite plugin ignores this callback
-	completely. '''
-	return template('contact')
+# app = Bottle()
+
+# with app:
+# 	assert bottle is default_app()
+#	@route('/')
 
 # Routes
+
+@route('/')
 
 # @route('/hello')
 # def hello():
 # 	return "Hello!"
 
-@route('/')
+# @route('/show/<post_id:int>')
+# def show(db, post_id):
+# 	c = db.execute('SELECT title, content FROM posts WHERE id = ?', (post_id,))
+# 	row = c.fetchone()
+# 	return template('show_post', title=row['title'], text=row['content'])
 
-@route('/index')
-def index():
-	return "This is another page"
+# @route('/contact')
+# def contact_page():
+# 	'''This callback does not need a db connection. Because the 'db'
+# 	keyword argument is missing, the sqlite plugin ignores this callback
+# 	completely. '''
+# 	return template('contact')
 
-@route('/hello/<name>')
-def greet(name=input("Hello, what is your name? ")):
-	return template('Hey {{name}}!', name=name)
+# @route('/index')
+# def index():
+# 	return "This is another page"
+
+# @route('/hello/<name>')
+# def greet(name=input("Hello, what is your name? ")):
+# 	return template('Hey {{name}}!', name=name)
 
 # @route('/wiki/<pagename>')
 # def show_wiki_page(pagename):
 # 	return template('This is the {{pagename}} page!', pagename=pagename)
 
-@route('/action/<user>')
-def user_api(action, user):
-	if action and user:
-		return template('Hello {{user}}!', user=user)
-	else:
-		return template('Sorry, an error occurred')
+# @route('/action/<user>')
+# def user_api(action, user):
+# 	if action and user:
+# 		return template('Hello {{user}}!', user=user)
+# 	else:
+# 		return template('Sorry, an error occurred')
 
 # filters can be used to define more specific parameter wildcards, and/or
 # to transform the covered part of the URL before it is passed to the callback.
@@ -153,9 +188,9 @@ def user_api(action, user):
 # HTTP errors and redirects:
 
 # Create a custom error message:
-@error(404)
-def error404(error):
-	return 'Nothing here, sorry'
+# @error(404)
+# def error404(error):
+# 	return 'Nothing here, sorry'
 
 # The abort() function - a shortcut for generating HTTP error pages:
 
