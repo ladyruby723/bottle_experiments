@@ -19,15 +19,15 @@
 #
 import os
 import mock, sys
-import mox as mox
-import examplemod
+# import mox as mox
+# import examplemod
 
 # sys.path.insert(0, os.path.abspath('.'))
 
 # If your python code is made to be run on the board, you might be safest including your app's code in the path, 
 # and not include directories like /fs/fs/usr/lib/python2.7/site-packages to avoid import problems:
 
-sys.path.insert(0, devdir + '/bottle/web.py')
+sys.path.insert(0, '/bottle/web.py')
 
 
 # This will include the necessary source files folders in the PATH to be able to generate the documentation from:
@@ -108,12 +108,12 @@ language = None
 
 exclude_patterns = ['_build', '_templates']
 
-MOCK_MODULES = ['web']
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = mock.Mock()
+# MOCK_MODULES = ['web']
+# for mod_name in MOCK_MODULES:
+#     sys.modules[mod_name] = mock.Mock()
 
-m = mox.Mox()
-m.StubOutWithMock(examplemod, 'read_reg')
+# m = mox.Mox()
+# m.StubOutWithMock(examplemod, 'read_reg')
 
 # web = web.py
 # readme = readme.rst
@@ -130,6 +130,7 @@ m.StubOutWithMock(examplemod, 'read_reg')
 # documents.
 #
 # default_role = None
+
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #
