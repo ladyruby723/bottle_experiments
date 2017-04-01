@@ -3,11 +3,31 @@ from bottle import template
 from bottle import get, post, request
 from bottle import static_file
 from bottle import error
+from bottle_sqlite import SQLitePlugin
 
+# Install the SQLite plugin application-wide.
+# SQLitePlugin is smart and will only affect
+# route callbacks that need a database connection.
+install(SQLitePlugin(dbfile='/tmp/test.db'))
 
-@route('/hello')
-def hello():
-	return "Hello!"
+@route('/show/<post_id:int>')
+def show(db, post_id):
+	c = db.execute('SELECT title, content FROM posts WHERE id = ?', (post_id,))
+	row = c.fetchone()
+	return template('show_post', title=row['title'], text=row['content'])
+
+@route('/contact')
+def contact_page():
+	'''This callback does not need a db connection. Because the 'db'
+	keyword argument is missing, the sqlite plugin ignores this callback
+	completely. '''
+	return template('contact')
+
+# Routes
+
+# @route('/hello')
+# def hello():
+# 	return "Hello!"
 
 @route('/')
 
@@ -16,12 +36,12 @@ def index():
 	return "This is another page"
 
 @route('/hello/<name>')
-def greet(name='Stranger'):
-	return template('Hello {{name}}, how are you?', name=name)
+def greet(name=input("Hello, what is your name? ")):
+	return template('Hey {{name}}!', name=name)
 
-@route('/wiki/<pagename>')
-def show_wiki_page(pagename):
-	return template('This is the {{pagename}} page!', pagename=pagename)
+# @route('/wiki/<pagename>')
+# def show_wiki_page(pagename):
+# 	return template('This is the {{pagename}} page!', pagename=pagename)
 
 @route('/action/<user>')
 def user_api(action, user):
@@ -34,39 +54,51 @@ def user_api(action, user):
 # to transform the covered part of the URL before it is passed to the callback.
 # :int matches digits only and converts the value to an integer
 # :float is similar to :int, but for decimal numbers
-@route('/object/<id:int>')
-def callback(id):
-	assert isinstance(id, int)
+# @route('/object/<id:int>')
+# def callback(id):
+# 	assert isinstance(id, int)
 
 # :re allows you to specify a custom regular expression in the config field.
-@route('/show/<name:re:[a-z]+>')
-def callback(name):
-	assert name.isalpha()
+# @route('/show/<name:re:[a-z]+>')
+# def callback(name):
+# 	assert name.isalpha()
 
 # :path matches all characters including the slash character, and can be used
 # to match more than one path segment
-@route('/static/<path:path>')
-def callback(path):
-	return static_file(path, ...)
+# @route('/static/<path:path>')
+# def callback(path):
+# 	return static_file(path, ...)
 
 # Http request methods
-@get('/login') # or @route('/login')
-def login():
-	return '''
-		<form action="/login" method="post">
-			Username: <input name="username" type="text" />
-			Password: <input name="password" type="password" />
-			<input value="Login" type="submit" />
-		</form>
-	'''
-@post('/login') # or @route('/login', method='POST')
-def do_login():
-	username = request.forms.get('username')
-	password = request.forms.get('password')
-	if check_login(username, password):
-		return "<p>Your login information was correct.</p>"
-	else:
-		return "<p>Login failed. Try entering your username and password again.</p>"
+# @get('/login') # or @route('/login')
+# def login():
+# 	return '''
+# 		<form action="/login" method="post">
+# 			Username: <input name="username" type="text" />
+# 			Password: <input name="password" type="password" />
+# 			<input value="Login" type="submit" />
+# 		</form>
+# 	'''
+# @post('/login') # or @route('/login', method='POST')
+# def do_login():
+# 	username = request.forms.get('username')
+# 	password = request.forms.get('password')
+# 	if check_login(username, password):
+# 		return "<p>Your login information was correct.</p>"
+# 	else:
+# 		return "<p>Login failed. Try entering your username and password again.</p>"
+
+
+# Other attributes for accessing form data:
+
+# Attribute 				Get Form Fields 	POST Form fields 	File Uploads
+
+# BaseRequest.query			yes					no 					no
+# BaseRequest.forms 		no 					yes 				no
+# BaseRequest.files 		no 					no 					yes
+# BaseRequest.params 		yes 				yes 				no
+# BaseRequest.GET 			yes 				no 					no
+# BaseRequest.POST 			no 					yes 				yes
 
 
 # Special HTTP request methods:
@@ -121,9 +153,22 @@ def error404(error):
 # response. This behavior can be set to False (to handle exceptions in your middleware instead) with
 # bottle.app().catchall = False
 
-# The Response object:
+# Templates:
 
+# To render a template, you can use the template() function or the view() decorator.
+# Simply provide the name of the template and the variables you want to pass to the 
+# template as keyword arguments:
 
+# @route('/hello')
+# @route('/hello/<name>')
+# def hello(name='World'):
+# 	return template('hello_template', name=name)
+
+# @route('/hello')
+# @route('/hello/<name>')
+# @view('hello_template')
+# def hello(name='World'):
+# 	return dict(name=name)
 
 
 # Passing a custom MIME type for static files:
@@ -137,7 +182,24 @@ def error404(error):
 # 	return static_file(filename, root='/path/to/static/files')
 
 
+# HTTP Headers
+
+# All HTTP headers sent by the client (Referrer, Agent, or Accept-Language) are
+# accessible through the BaseRequest.headers attribute:
+
+# from bottle import route, request
+# @route('/is_ajax')
+# def is_ajax():
+# 	if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+# 		return 'This is an AJAX request'
+# 	else:
+# 		return 'This is a normal request'
+
+
+
 # the run() call starts a built-in development server
 # debug should be switched to False for public applications
 run(host='localhost', port=8080, debug=True)
 
+
+# reference: http://bottlepy.org/docs/dev/tutorial.html
