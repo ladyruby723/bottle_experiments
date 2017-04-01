@@ -92,11 +92,52 @@ def do_login():
 # def server_static(filename):
 # 	return static_file(filepath, root='/path/to/static/file')
 
+# HTTP errors and redirects:
+
 # Create a custom error message:
 @error(404)
 def error404(error):
 	return 'Nothing here, sorry'
 
+# The abort() function - a shortcut for generating HTTP error pages:
+
+# from bottle import route, abort
+# @route('/restricted')
+# def restricted():
+# 	abort(401, "Access denied.")
+
+# Redirect a client to a different URL with the 303 See Other response
+# with the Location header set to the new URL.
+# This can be accomplished with redirect():
+
+# from bottle import redirect
+# @route('/wrong/url')
+# def wrong():
+# 	redirect("/right/url") # where 'wrong' is the protected URL and 'right' is the redirect path
+
+# Other Exceptions:
+
+# All exceptions other than HTTPResponse or HTTPError wil result in a 500 Internal Server Error
+# response. This behavior can be set to False (to handle exceptions in your middleware instead) with
+# bottle.app().catchall = False
+
+# The Response object:
+
+
+
+
+# Passing a custom MIME type for static files:
+
+# @route('/images/<filename:re:.*\.png>')
+# def send_image(filename):
+# 	return static_file(filename, root='/path/to/image/files', mimetype='image/png')
+
+# @route('/static/<filename:path>')
+# def send_static(filename):
+# 	return static_file(filename, root='/path/to/static/files')
+
+
 # the run() call starts a built-in development server
 # debug should be switched to False for public applications
 run(host='localhost', port=8080, debug=True)
+
