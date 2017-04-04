@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import bottle
 from bottle import route, run
 from bottle import template
@@ -73,11 +74,9 @@ run(reloader=True)
 
 # Routes
 
-@route('/')
-
 # @route('/hello')
 # def hello():
-# 	return "Hello!"
+#  	return "Hello!"
 
 # @route('/show/<post_id:int>')
 # def show(db, post_id):

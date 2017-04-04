@@ -18,7 +18,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import mock, sys
+import  unittest.mock, sys
 # import mox as mox
 # import examplemod
 
@@ -27,7 +27,7 @@ import mock, sys
 # If your python code is made to be run on the board, you might be safest including your app's code in the path, 
 # and not include directories like /fs/fs/usr/lib/python2.7/site-packages to avoid import problems:
 
-sys.path.insert(0, '/bottle/web.py')
+sys.path.insert(0, '/bottle_experiments/web.py')
 
 
 # This will include the necessary source files folders in the PATH to be able to generate the documentation from:

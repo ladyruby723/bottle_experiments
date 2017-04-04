@@ -1,6 +1,7 @@
 # Makefile for Sphinx documentation
 #
 
+#!/usr/bin/env python3
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build

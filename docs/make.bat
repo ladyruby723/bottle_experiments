@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 @ECHO OFF
 
 REM Command file for Sphinx documentation
